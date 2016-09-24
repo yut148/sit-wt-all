@@ -15,6 +15,9 @@
  */
 package org.sitoolkit.wt.domain.operation.selenium;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openqa.selenium.WebElement;
 import org.sitoolkit.wt.domain.testscript.Locator;
 import org.sitoolkit.wt.domain.testscript.TestStep;
@@ -27,6 +30,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SwitchFrameOperation extends SeleniumOperation {
 
+    private static List<WebElement> switchFrameHistory = new ArrayList<>();
+
     @Override
     public void execute(TestStep testStep, SeleniumOperationContext ctx) {
         ctx.info("フレームを{}に切り替えます", testStep.getItemName());
@@ -34,11 +39,17 @@ public class SwitchFrameOperation extends SeleniumOperation {
         if (locator.isNa()) {
             seleniumDriver.switchTo().defaultContent();
             position.setCurrentFrame(null);
+            switchFrameHistory.clear();
         } else {
             WebElement frame = findElement(locator);
             seleniumDriver.switchTo().frame(frame);
             position.setCurrentFrame(frame);
+            switchFrameHistory.add(frame);
         }
+    }
+
+    public List<WebElement> getSwitchFrameHistory() {
+        return switchFrameHistory;
     }
 
 }

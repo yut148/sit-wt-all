@@ -1,0 +1,37 @@
+<!--
+Copyright 2013 Monocrea Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+	<body>
+		<h3>2-1フレームの内側</h3>
+		<button id="nestedIframe_inner_btn2" onclick="alert('2-1フレーム内のボタンです。');">2-1フレーム内のボタン</button>
+		<table>
+		  <tr>
+		    <td>
+				<iframe id="nestedIframeInner3-1" src="nestedIframeInner3-1.html" style="display:block;margin-top:1rem;"  width="250" height="200">
+				</iframe>
+		    </td>
+		    <td>
+				<iframe id="nestedIframeInner3-2" src="nestedIframeInner3-2.html" style="display:block;margin-top:1rem;"  width="250" height="200">
+				</iframe>
+		    </td>
+		  </tr>
+		</table>
+	</body>
+</html>
