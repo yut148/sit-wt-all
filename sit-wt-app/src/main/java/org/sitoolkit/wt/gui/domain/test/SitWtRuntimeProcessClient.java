@@ -55,7 +55,8 @@ public class SitWtRuntimeProcessClient {
         }
 
         command.add("-Dsitwt.open-evidence=true");
-
+        command.add("-Duser.dir=" + testRunParams.getBaseDir().getAbsolutePath());
+        
         command.add("org.sitoolkit.wt.app.test.TestRunner");
 
         command.add(StrUtils.join(testRunParams.getScripts()));

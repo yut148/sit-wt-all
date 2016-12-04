@@ -23,7 +23,11 @@ public class EvidenceDir {
 
     private static final Logger LOG = LoggerFactory.getLogger(EvidenceDir.class);
 
-    private static final String BASE_EVIDENCE_ROOT = "base-evidence";
+    private static final String USER_DIR = System.getProperty("user.dir");
+
+    private static final String EVIDENCE_DIR = "evidence";
+
+    private static final String BASE_EVIDENCE_DIR = "base-evidence";
 
     private static final String COMPARE_PREFIX = "comp_";
 
@@ -39,8 +43,6 @@ public class EvidenceDir {
 
     private static final String IMG_BASE_DIR = "base";
 
-    private static final String EVIDENCE_ROOT_DIR = "evidence";
-
     private File dir;
 
     private static String evidenceDirRegex = "^evidence_.*";
@@ -55,15 +57,19 @@ public class EvidenceDir {
     }
 
     public static EvidenceDir getInstance(String dir) {
-        return getInstance(new File(dir));
+        return getInstance(new File(prependUserDir(dir)));
     }
 
     public static EvidenceDir getBase(String browser) {
-        return getInstance(new File(BASE_EVIDENCE_ROOT, browser));
+        return getInstance(new File(prependUserDir(BASE_EVIDENCE_DIR), browser));
     }
 
     public static String getRoot() {
-        return EVIDENCE_ROOT_DIR;
+        return prependUserDir(EVIDENCE_DIR);
+    }
+
+    public static String prependUserDir(String dir) {
+        return StringUtils.join(USER_DIR, "/", dir);
     }
 
     public static EvidenceDir getLatest() {
@@ -72,7 +78,7 @@ public class EvidenceDir {
 
     public static File getLatestEvidenceDir() {
 
-        File outputDir = new File(EVIDENCE_ROOT_DIR);
+        File outputDir = new File(getRoot());
         List<File> evidenceDirs = new ArrayList<File>(FileUtils.listFilesAndDirs(outputDir,
                 FalseFileFilter.INSTANCE, new RegexFileFilter(evidenceDirRegex)));
         evidenceDirs.remove(outputDir);
