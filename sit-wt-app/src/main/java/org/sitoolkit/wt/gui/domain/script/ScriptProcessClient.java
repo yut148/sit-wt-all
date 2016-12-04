@@ -14,6 +14,7 @@ public class ScriptProcessClient {
             ProcessParams params) {
         List<String> command = SitWtRuntimeUtils.buildJavaCommand();
         SitWtRuntimeUtils.addVmArgs(command, driverType, baseUrl);
+		command.add("-Duser.dir=" + params.getDirectory().getAbsolutePath());
         command.add("org.sitoolkit.wt.app.page2script.Page2Script");
 
         ConversationProcess process = ConversationProcessContainer.create();

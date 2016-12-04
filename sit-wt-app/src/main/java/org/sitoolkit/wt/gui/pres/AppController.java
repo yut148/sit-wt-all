@@ -175,7 +175,8 @@ public class AppController implements Initializable {
         projectState.setState(State.BROWSING);
 
         conversationProcess = scriptService.page2script(testToolbarController.getDriverType(),
-                testToolbarController.getBaseUrl(), exitCode -> {
+                testToolbarController.getBaseUrl(), projectState.getBaseDir(), 
+                exitCode -> {
                     projectState.reset();
                 });
 
