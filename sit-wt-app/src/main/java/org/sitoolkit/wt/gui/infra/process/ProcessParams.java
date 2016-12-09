@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class ProcessParams {
 
+	private static File defaultCurrentDir;
+	
     private List<StdoutListener> stdoutListeners = new ArrayList<>();
 
     private File directory;
@@ -20,6 +22,14 @@ public class ProcessParams {
 
     public ProcessParams() {
     }
+    
+	public static File getDefaultCurrentDir() {
+		return defaultCurrentDir;
+	}
+
+	public static void setDefaultCurrentDir(File defaultCurrentDir) {
+		ProcessParams.defaultCurrentDir = defaultCurrentDir;
+	}
 
     public List<StdoutListener> getStdoutListeners() {
         return stdoutListeners;
@@ -60,5 +70,5 @@ public class ProcessParams {
     public void setExitClallbacks(List<ProcessExitCallback> exitClallbacks) {
         this.exitClallbacks = exitClallbacks;
     }
-
+    
 }
