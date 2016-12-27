@@ -35,17 +35,17 @@ public class FileIOUtils {
         }
         
         HttpURLConnection httpConnection;
-        long completeFileSize = 0;
+        long destFileLength = 0;
 		try {
 			httpConnection = (HttpURLConnection) (new URL(url).openConnection());
-			completeFileSize = httpConnection.getContentLength();
+			destFileLength = httpConnection.getContentLengthLong();
 		} catch (IOException e) {
 			throw new UnExpectedException(e);
 		}
 
         try (InputStream stream = new URL(url).openStream()) {
     		Timer timer = new Timer();
-    		timer.schedule(new DlProgressTask(destFile, completeFileSize), 3000, 3000);
+    		timer.schedule(new DlProgressTask(destFile, destFileLength), 3000, 3000);
         	
             Files.copy(stream, destFile.toPath());
             
@@ -150,18 +150,18 @@ class DlProgressTask extends TimerTask {
 
 	private File destFile;
 	
-	private long completeSize;
+	private long destFileLength;
 	
-	public DlProgressTask(File destFile, long completeSize) {
+	public DlProgressTask(File destFile, long destFileLength) {
 		super();
 		this.destFile = destFile;
-		this.completeSize = completeSize;
+		this.destFileLength = destFileLength;
 	}
 
 	@Override
 	public void run() {
 		LOG.log(Level.INFO, "{0} / {1} KB", 
-				new Object[]{ destFile.length() / 1024, completeSize / 1024 });
+				new Object[]{ destFile.length() / 1024, destFileLength / 1024 });
 	}
 
 	public File getDestFile() {
@@ -172,12 +172,13 @@ class DlProgressTask extends TimerTask {
 		this.destFile = destFile;
 	}
 
-	public long getCompleteSize() {
-		return completeSize;
+	public long getDestFileLength() {
+		return destFileLength;
 	}
 
-	public void setCompleteSize(long completeSize) {
-		this.completeSize = completeSize;
+	public void setDestFileLength(long destFileLength) {
+		this.destFileLength = destFileLength;
 	}
+
 
 }
