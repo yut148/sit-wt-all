@@ -6,9 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Enumeration;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -20,7 +23,7 @@ import org.sitoolkit.wt.gui.infra.UnExpectedException;
 public class FileIOUtils {
 
     private static final Logger LOG = Logger.getLogger(FileIOUtils.class.getName());
-
+    
     public static void download(String url, File destFile) {
         Stopwatch.start();
 
@@ -30,9 +33,23 @@ public class FileIOUtils {
         if (!destDir.exists()) {
             destDir.mkdirs();
         }
+        
+        HttpURLConnection httpConnection;
+        long completeFileSize = 0;
+		try {
+			httpConnection = (HttpURLConnection) (new URL(url).openConnection());
+			completeFileSize = httpConnection.getContentLength();
+		} catch (IOException e) {
+			throw new UnExpectedException(e);
+		}
 
         try (InputStream stream = new URL(url).openStream()) {
+    		Timer timer = new Timer();
+    		timer.schedule(new DlProgressTask(destFile, completeFileSize), 3000, 3000);
+        	
             Files.copy(stream, destFile.toPath());
+            
+            timer.cancel();
         } catch (IOException e) {
             throw new UnExpectedException(e);
         }
@@ -124,4 +141,43 @@ public class FileIOUtils {
             throw new UnExpectedException(e);
         }
     }
+}
+
+
+class DlProgressTask extends TimerTask {
+	
+	private static final Logger LOG = Logger.getLogger(DlProgressTask.class.getName());
+
+	private File destFile;
+	
+	private long completeSize;
+	
+	public DlProgressTask(File destFile, long completeSize) {
+		super();
+		this.destFile = destFile;
+		this.completeSize = completeSize;
+	}
+
+	@Override
+	public void run() {
+		LOG.log(Level.INFO, "{0} / {1} KB", 
+				new Object[]{ destFile.length() / 1024, completeSize / 1024 });
+	}
+
+	public File getDestFile() {
+		return destFile;
+	}
+
+	public void setDestFile(File destFile) {
+		this.destFile = destFile;
+	}
+
+	public long getCompleteSize() {
+		return completeSize;
+	}
+
+	public void setCompleteSize(long completeSize) {
+		this.completeSize = completeSize;
+	}
+
 }
