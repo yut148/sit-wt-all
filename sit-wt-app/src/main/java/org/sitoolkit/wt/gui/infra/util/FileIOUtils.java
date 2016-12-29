@@ -6,12 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -19,10 +18,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.sitoolkit.wt.gui.infra.UnExpectedException;
+import org.sitoolkit.wt.gui.infra.concurrent.ExecutorContainer;
+import org.sitoolkit.wt.gui.infra.process.LogStdoutListener;
+import org.sitoolkit.wt.gui.infra.process.StdoutListener;
+import org.sitoolkit.wt.gui.infra.process.StdoutListenerContainer;
 
 public class FileIOUtils {
 
     private static final Logger LOG = Logger.getLogger(FileIOUtils.class.getName());
+
+    private static final LogStdoutListener LOG_STDOUT_LISTENER = new LogStdoutListener(LOG,
+            Level.INFO, "stdout");
     
     public static void download(String url, File destFile) {
         Stopwatch.start();
@@ -34,29 +40,46 @@ public class FileIOUtils {
             destDir.mkdirs();
         }
         
-        HttpURLConnection httpConnection;
-        long destFileLength = 0;
-		try {
-			httpConnection = (HttpURLConnection) (new URL(url).openConnection());
-			destFileLength = httpConnection.getContentLengthLong();
-		} catch (IOException e) {
-			throw new UnExpectedException(e);
-		}
+        URL dlUrl = null;
+        try {
+        	dlUrl = new URL(url);
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
 
-        try (InputStream stream = new URL(url).openStream()) {
-    		Timer timer = new Timer();
-    		timer.schedule(new DlProgressTask(destFile, destFileLength), 3000, 3000);
+        try (InputStream stream = dlUrl.openStream()) {
+        	
+			long destFileLength = dlUrl.openConnection().getContentLengthLong();
+			ExecutorContainer.get().execute(() -> {
+				
+		        List<StdoutListener> stdoutListeners = new ArrayList<>();
+		        stdoutListeners.add(StdoutListenerContainer.get().getListeners().get(0));
+		        stdoutListeners.add(LOG_STDOUT_LISTENER);
+				
+				stdoutListeners.get(0).nextLine("Downloading: " + url);
+				while(destFile.length() != destFileLength){
+					
+					for (StdoutListener listener : stdoutListeners) {
+						listener.nextLine(destFile.length() / 1024 + " / " + destFileLength / 1024 + " KB");
+					}
+					
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+		                LOG.log(Level.WARNING, "", e);
+					}
+				}
+				stdoutListeners.get(0).nextLine("\nDownloaded " + url);
+			});
         	
             Files.copy(stream, destFile.toPath());
-            
-            timer.cancel();
         } catch (IOException e) {
             throw new UnExpectedException(e);
         }
 
         LOG.log(Level.INFO, "downloaded in {0}", Stopwatch.end());
     }
-
+    
     public static void unarchive(File srcFile, File destDir) {
         Stopwatch.start();
 
@@ -141,44 +164,4 @@ public class FileIOUtils {
             throw new UnExpectedException(e);
         }
     }
-}
-
-
-class DlProgressTask extends TimerTask {
-	
-	private static final Logger LOG = Logger.getLogger(DlProgressTask.class.getName());
-
-	private File destFile;
-	
-	private long destFileLength;
-	
-	public DlProgressTask(File destFile, long destFileLength) {
-		super();
-		this.destFile = destFile;
-		this.destFileLength = destFileLength;
-	}
-
-	@Override
-	public void run() {
-		LOG.log(Level.INFO, "{0} / {1} KB", 
-				new Object[]{ destFile.length() / 1024, destFileLength / 1024 });
-	}
-
-	public File getDestFile() {
-		return destFile;
-	}
-
-	public void setDestFile(File destFile) {
-		this.destFile = destFile;
-	}
-
-	public long getDestFileLength() {
-		return destFileLength;
-	}
-
-	public void setDestFileLength(long destFileLength) {
-		this.destFileLength = destFileLength;
-	}
-
-
 }
