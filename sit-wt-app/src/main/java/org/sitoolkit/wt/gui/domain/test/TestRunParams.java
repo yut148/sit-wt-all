@@ -14,6 +14,8 @@ public class TestRunParams {
     private boolean debug;
 
     private boolean parallel;
+        
+    private boolean compareScreenshot;
 
     private String driverType;
 
@@ -52,7 +54,15 @@ public class TestRunParams {
         this.parallel = parallel;
     }
 
-    public String getDriverType() {
+	public boolean isCompareScreenshot() {
+		return compareScreenshot;
+	}
+
+	public void setCompareScreenshot(boolean compareScreenshot) {
+		this.compareScreenshot = compareScreenshot;
+	}
+
+	public String getDriverType() {
         return driverType;
     }
 

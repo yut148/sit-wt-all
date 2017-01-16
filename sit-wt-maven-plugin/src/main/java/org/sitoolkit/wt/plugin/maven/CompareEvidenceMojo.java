@@ -33,7 +33,7 @@ public class CompareEvidenceMojo extends AbstractMojo {
     private boolean compareScreenshot;
 
     @Parameter(property = "evidence.open", defaultValue = "true")
-    private String evidenceOpen;
+    private boolean evidenceOpen;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

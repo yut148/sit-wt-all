@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import org.sitoolkit.wt.gui.app.diffevidence.DiffEvidenceService;
 import org.sitoolkit.wt.gui.app.project.ProjectService;
 import org.sitoolkit.wt.gui.app.script.ScriptService;
 import org.sitoolkit.wt.gui.app.test.TestService;
@@ -34,6 +35,9 @@ public class AppController implements Initializable {
 
     @FXML
     private HBox projectGroup;
+    
+	@FXML
+	private ToolBar genDiffEvidenceGroup;
 
     @FXML
     private ToolBar genScriptGroup;
@@ -73,6 +77,8 @@ public class AppController implements Initializable {
 
     UpdateController updateController = new UpdateController();
 
+    DiffEvidenceService diffEvidenceService = new DiffEvidenceService();
+    
     TestService testService = new TestService();
 
     ProjectService projectService = new ProjectService();
@@ -98,6 +104,7 @@ public class AppController implements Initializable {
         }
 
         FxUtils.bindVisible(projectGroup, projectState.isLocking().not());
+        FxUtils.bindVisible(genDiffEvidenceGroup, projectState.isLoaded());
         FxUtils.bindVisible(genScriptGroup, projectState.isLoaded());
         FxUtils.bindVisible(browsingGroup, projectState.isBrowsing());
 
@@ -168,7 +175,66 @@ public class AppController implements Initializable {
         fileTreeController.setFileTreeRoot(projectDir);
         FxContext.setTitie(projectDir.getAbsolutePath());
     }
+    
+    @FXML
+    public void maskEvidence() {
 
+        messageView.startMsg("スクリーンショットにマスク処理を施したエビデンスを生成します。");
+        
+        conversationProcess = diffEvidenceService.genMaskEvidence(fileTreeController.getSelectedFiles(), 
+        		exitCode -> {
+        			projectState.reset();
+        		});
+        
+        if (conversationProcess == null) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("");
+            alert.setContentText("");
+            alert.setHeaderText("マスク対象のエビデンスディレクトリを1つ選択してください。");
+            alert.show();
+        }
+        
+    }
+
+	@FXML 
+	public void setBaseEvidence() {
+		
+        messageView.startMsg("基準エビデンス確定処理を実行します。");
+    	
+        conversationProcess = diffEvidenceService.setBaseEvidence(fileTreeController.getSelectedFiles(), 
+        		exitCode -> {
+        			projectState.reset();
+        		});
+
+        if (conversationProcess == null) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("");
+            alert.setContentText("");
+            alert.setHeaderText("基準エビデンスとして確定するエビデンスディレクトリを1つ選択してください。");
+            alert.show();
+        }
+	}
+
+	@FXML 
+	public void genDiffEvidence() {
+		
+        messageView.startMsg("比較エビデンスを生成します。");
+    	
+        conversationProcess = diffEvidenceService.genDiffEvidence(fileTreeController.getSelectedFiles(), 
+        		exitCode -> {
+        			projectState.reset();
+        		});
+
+        if (conversationProcess == null) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("");
+            alert.setContentText("");
+            alert.setHeaderText("比較対象のエビデンスディレクトリを1つ、または2つ選択してください。1つだけ選択した場合は、選択したディレクトリと基準エビデンスを比較します。");
+            alert.show();
+        }
+        
+	}
+    
     ScriptService scriptService = new ScriptService();
 
     @FXML

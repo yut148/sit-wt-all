@@ -20,7 +20,7 @@
 <?import javafx.scene.control.Tooltip?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="39.0" minWidth="-Infinity"
-  prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
+  prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="org.sitoolkit.wt.gui.pres.AppController">
   <center>
     <SplitPane dividerPositions="0.3" BorderPane.alignment="CENTER">
@@ -42,6 +42,26 @@
         </children>
       </HBox>
       <fx:include fx:id="testToolbar" source="TestToolbar.fxml" />
+      <ToolBar fx:id="genDiffEvidenceGroup">
+        <items>
+          <Separator orientation="VERTICAL" />
+          <Label onMouseClicked="#maskEvidence" styleClass="image-btn,mask-btn">
+          	<tooltip>
+          		<Tooltip text="スクリーンショットにマスク処理を施します"/>
+          	</tooltip>
+          </Label>
+          <Label onMouseClicked="#setBaseEvidence" styleClass="image-btn,base-btn">
+          	<tooltip>
+          		<Tooltip text="基準エビデンスを確定します"/>
+          	</tooltip>
+          </Label>
+          <Label onMouseClicked="#genDiffEvidence" styleClass="image-btn,diff-btn">
+          	<tooltip>
+          		<Tooltip text="比較エビデンスを生成します"/>
+          	</tooltip>
+          </Label>
+        </items>
+      </ToolBar>
       <ToolBar fx:id="genScriptGroup">
         <items>
           <Separator orientation="VERTICAL" />
