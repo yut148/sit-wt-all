@@ -15,7 +15,7 @@ import org.sitoolkit.wt.domain.tester.SitTesterTestBase;
 /**
  *
  */
-public class DBVerifyOperationTest extends SitTesterTestBase {
+public class DbVerifyOperationTest extends SitTesterTestBase {
 
     @BeforeClass
     public static void runDerby() {

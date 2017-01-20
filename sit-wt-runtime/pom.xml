@@ -133,14 +133,10 @@
       <version>1.8.9</version>
     </dependency>
     <dependency>
-      <groupId>org.carlspring.maven</groupId>
-      <artifactId>derby-maven-plugin</artifactId>
-      <version>1.10</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.13.1.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <parent>
@@ -181,6 +177,14 @@
         </includes>
         <targetPath>${project.build.outputDirectory}/sample</targetPath>
       </resource>
+      <resource>
+        <directory>${project.basedir}/db</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>connection.properties</include>
+        </includes>
+        <targetPath>${project.build.outputDirectory}/db</targetPath>
+      </resource>
     </resources>
     <testResources>
       <testResource>
@@ -188,6 +192,14 @@
         <excludes>
           <exclude>**/~$*.xlsx</exclude>
         </excludes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/db</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>connection.properties</include>
+        </includes>
+        <targetPath>${project.build.testOutputDirectory}/db</targetPath>
       </testResource>
     </testResources>
     <pluginManagement>
